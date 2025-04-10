@@ -9,7 +9,7 @@
     "build": "tsc",
     "test": "ava",
     "test:watch": "ava --watch",
-    "test:coverage": "c8 ava"
+    "test:coverage": "c8 -r lcov ava"
   },
   "keywords": [],
   "author": "",
