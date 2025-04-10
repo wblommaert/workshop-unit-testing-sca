@@ -5,6 +5,7 @@
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
+    "sourceMap": true,
     "outDir": "./dist"
   }
 }
