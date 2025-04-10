@@ -74,6 +74,14 @@ test("constructor should initialize router with correct route handler", async (t
   t.true(mockGet.calledWith("/", sinon.match.func));
 });
 
+test("router getter should return the router instance", (t) => {
+  // Arrange
+  const { controller, mockRouter } = t.context;
+
+  // Assert
+  t.is(controller.router, mockRouter);
+});
+
 test("helloWorld should call service and return data with status 200", async (t) => {
   // Arrange
   const {
