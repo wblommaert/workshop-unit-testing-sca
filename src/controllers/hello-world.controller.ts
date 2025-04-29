@@ -3,8 +3,8 @@ import type { HelloWorldService } from "../services/hello-world.service.ts";
 import { HelloWorldServiceImpl } from "../services/implementation/hello-world.service.ts";
 
 export class HelloWorldController {
-  #helloWorldService: HelloWorldService;
-  #router: Router;
+  readonly #helloWorldService: HelloWorldService;
+  readonly #router: Router;
 
   constructor(
     helloWorldService: HelloWorldService = new HelloWorldServiceImpl(),
