@@ -1,93 +1,73 @@
-import anyTest, { type TestFn } from "ava";
+import test from "ava";
+import express, { type Express, type RequestHandler } from "express";
 import sinon from "sinon";
-import { type Express, Router } from "express";
 import { App } from "./app.ts";
 import { HelloWorldController } from "./controllers/hello-world.controller.ts";
 
-type TContext = {
-  mockExpress: sinon.SinonStub;
-  mockApp: Express;
-  mockUse: sinon.SinonStub;
-  mockListen: sinon.SinonStub;
-  mockRouter: Router;
-  mockHelloWorldController: HelloWorldController;
-  originalEnv: NodeJS.ProcessEnv;
-  app: App;
-};
+// Helper mock class for HelloWorldController
+class MockHelloWorldController {
+  router: RequestHandler;
 
-const test = anyTest as TestFn<TContext>;
+  constructor() {
+    this.router = (req, res, next) => next();
+  }
+}
 
-// Setup test helpers
-test.beforeEach((t) => {
-  // Mock express
-  const mockUse = sinon.stub();
-  const mockListen = sinon.stub();
+test("App should register HelloWorldController route", t => {
+  const useSpy = sinon.spy();
 
   const mockApp = {
-    use: mockUse,
-    listen: mockListen,
+    use: useSpy
   } as unknown as Express;
 
-  // Mock express function
-  const mockExpress = sinon.stub().returns(mockApp);
+  const mockController = new MockHelloWorldController() as unknown as HelloWorldController;
 
-  // Mock HelloWorldController
-  const mockRouter = {} as Router;
-  const mockHelloWorldController = {
-    router: mockRouter,
-  } as HelloWorldController;
+  new App(mockController, mockApp);
 
-  // Save original env
-  const originalEnv = { ...process.env };
-
-  // Set context for tests
-  t.context = {
-    mockExpress,
-    mockApp,
-    mockUse,
-    mockListen,
-    mockRouter,
-    mockHelloWorldController,
-    originalEnv,
-    app: new App(mockHelloWorldController, mockApp),
-  };
+  t.true(useSpy.calledWith("/api/hello-world", mockController.router));
 });
 
-test.afterEach((t) => {
-  // Restore original env and console.log
-  process.env = t.context.originalEnv;
-  sinon.restore();
+test.serial("App should start server on default port", async t => {
+  const listenSpy = sinon.stub().callsFake((port: number, cb: () => void) => cb());
+
+  const mockApp = {
+    use: sinon.spy(),
+    listen: listenSpy
+  } as unknown as Express;
+
+  const mockController = new MockHelloWorldController() as unknown as HelloWorldController;
+
+  const app = new App(mockController, mockApp);
+
+  app.start(); // no custom port passed
+
+  t.true(listenSpy.calledOnce);
+  t.is(listenSpy.firstCall.args[0], 3000);
 });
 
-test("constructor should configure routes correctly", (t) => {
-  const { mockUse, mockRouter } = t.context;
+test.serial("App should respect PORT environment variable", async t => {
+  const previousPort = process.env.PORT;
+  process.env.PORT = "4000";
 
-  t.true(mockUse.calledOnce);
-  t.true(mockUse.calledWith("/api/hello-world", mockRouter));
-});
+  const listenSpy = sinon.stub().callsFake((port: number, cb: () => void) => cb());
 
-test("start should listen on default port 3000 when PORT env var is not set", (t) => {
-  // Arrange
-  const { app, mockListen } = t.context;
-  delete process.env.PORT;
+  const mockApp = {
+    use: sinon.spy(),
+    listen: listenSpy
+  } as unknown as Express;
 
-  // Act
-  app.start();
+  const mockController = new MockHelloWorldController() as unknown as HelloWorldController;
 
-  // Assert
-  t.true(mockListen.calledOnce);
-  t.true(mockListen.calledWith(3000, sinon.match.func));
-});
+  const app = new App(mockController, mockApp);
 
-test("start should listen on PORT env var when set", (t) => {
-  // Arrange
-  const { app, mockListen } = t.context;
-  process.env.PORT = "8080";
+  app.start(); // should read process.env.PORT
 
-  // Act
-  app.start();
+  t.true(listenSpy.calledOnce);
+  t.is(listenSpy.firstCall.args[0], 4000);
 
-  // Assert
-  t.true(mockListen.calledOnce);
-  t.true(mockListen.calledWith(8080, sinon.match.func));
+  if (previousPort !== undefined) {
+    process.env.PORT = previousPort;
+  } else {
+    delete process.env.PORT;
+  }
 });
