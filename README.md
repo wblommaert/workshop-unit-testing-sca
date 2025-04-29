@@ -90,25 +90,6 @@ This repository includes CI/CD configurations that demonstrate:
 
 You can find the CI/CD configuration files in the `.github/workflows` directory.
 
-## Workshop Exercises
-
-The exercises are organized in different branches:
-
-- `main`: Starting point with the complete application
-- `exercise/1-basic-tests`: First exercise for writing basic unit tests
-- `exercise/2-mocking`: Exercise focusing on mocking dependencies
-- `exercise/3-integration-tests`: Exercise on integration tests
-- `exercise/4-static-analysis`: Implementing static code analysis
-- `exercise/5-ci-cd`: Setting up CI/CD pipelines
-
-To switch to a specific exercise:
-
-```bash
-git checkout exercise/1-basic-tests
-```
-
-Each exercise branch includes specific instructions in its README.
-
 ## Best Practices
 
 Throughout this workshop, we'll cover best practices for:
@@ -122,7 +103,7 @@ Throughout this workshop, we'll cover best practices for:
 
 ## Resources
 
-- [Jest Documentation](https://jestjs.io/docs/getting-started)
+- [Ava Documentation](https://github.com/avajs/ava)
 - [ESLint Documentation](https://eslint.org/docs/user-guide/getting-started)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
@@ -130,6 +111,4 @@ Throughout this workshop, we'll cover best practices for:
 ## License
 
 [MIT](LICENSE)
-```
 
-Happy testing!
