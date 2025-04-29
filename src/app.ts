@@ -2,7 +2,7 @@ import express, { type Express } from "express";
 import { HelloWorldController } from "./controllers/hello-world.controller.ts";
 
 export class App {
-  #app: Express;
+  readonly #app: Express;
 
   constructor(
     helloWorldController = new HelloWorldController(),
